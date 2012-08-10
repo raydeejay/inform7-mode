@@ -37,4 +37,32 @@
 (modify-syntax-entry ?\[ "<]" inform7-mode-syntax-table)
 (modify-syntax-entry ?\] ">[" inform7-mode-syntax-table)
 
+
+;; raydj
+(require 'comint)
+
+(defun compile-current-story ()
+  "Compile the current file (must be saved to disk already)."
+(interactive)
+    ; trim '/Source' from the directory to get the parameter to pass to i7
+    (save-buffer)
+    (setq fName (substring default-directory 0 -8))
+    (setq progName "i7")
+    (setq cmdStr (concat progName " \""   fName "\""))
+
+      (progn
+        (message "Compiling...")
+;        (shell-command cmdStr "*Inform7 compile output*" )
+	(delete-other-windows)
+	(switch-to-buffer-other-window "*Inform7 compile output*")
+	(erase-buffer)
+	(other-window -1)
+        (apply 'make-comint "Inform7 compile output" progName nil (list "-c" fName))
+        )
+)
+
+(global-set-key (kbd "C-c C-c") 'compile-current-story)
+
+; (delete-other-windows-internal)
+
 (provide 'inform7-mode)
